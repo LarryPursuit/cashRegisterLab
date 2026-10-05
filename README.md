@@ -1,123 +1,120 @@
-# Object Oriented Programming (OOP) Part 2 - Cash Register Lab
+# Cash Register
 
-Now that we’ve discussed more about object oriented design philosophies and techniques like decorators we will be looking at building more complex objects. In this case we will be building a cash register object to simulate different functions of a cash register for an e-commerce site. 
+A small Python object model of a cash register for an e-commerce checkout. It
+keeps a running total, records every item scanned, applies a percentage
+discount, and can void the most recent transaction.
 
-## Tools & Resources
-* [GitHub Repo](https://github.com/learn-co-curriculum/oop-p2-cash-register-lab)
-* [Python Classes](https://docs.python.org/3/tutorial/classes.html)
+Built for the Flatiron School lab *Object Oriented Programming (OOP) Part 2 –
+Cash Register*.
 
-## Instructions
+## Features
 
-### Set Up
+- **Optional discount** set when the register is created (`CashRegister(20)` = 20% off)
+- **Discount validation** through a property: only whole numbers from 0–100 are
+  accepted; anything else prints `Not valid discount`
+- **Add items** with a price and optional quantity
+- **Apply the discount** to the current total
+- **Void the last transaction**, restoring both the total and the item list
 
-Before we begin coding, let's complete the initial setup for this lesson: 
-* Fork and Clone: For this lesson, you will need the following GitHub Repo:
-  * Go to the provided GitHub repository link.
-  * Fork the repository to your GitHub account.
-  * Clone the forked repository to your local machine.
-* Open and Run File
-  * Open the project in VSCode.
-  * Run npm install to install all necessary dependencies.
+## Requirements
 
-### Task 1: Define the Problem
+- Python 3 (the Pipfile pins 3.8.13; newer versions also work)
+- [pipenv](https://pipenv.pypa.io/)
 
-Build a model for a cash register
-* Build a cash register object
-* Add items
-* Apply discounts
-* Void previous transactions
+## Installation
 
-### Task 2: Determine the Design
+```bash
+git clone https://github.com/<your-username>/oop-p2-cash-register-lab.git
+cd oop-p2-cash-register-lab
+pipenv install
+pipenv shell
+```
 
-Cash Register
-* Attributes
-  * discount
-  * total
-  * items
-  * previous_transactions
-* Methods
-  * add_item(item, price, quantity)
-  * apply_discount()
-  * void_last_transaction()
+If Python 3.8.13 isn't installed, point pipenv at the Python you have:
 
-### Task 3: Develop, Test, and Refine the Code
+```bash
+pipenv install --python $(which python3)
+```
 
-#### Step 1: Git Feature Branch
+## Usage
 
-* Create a feature branch for your work using git.
+```python
+from cash_register import CashRegister
 
-#### Step 2: Create a CashRegister class
+register = CashRegister(20)          # 20% discount
 
-* ```__init__```:
-  * discount
-  * Allow for user to input
-  * If no input initialize as 0
-  * Note that discount is a percentage off of the total cash register price (e.g. a discount of 20 means the customer receives 20% off of their total price)
-* ```total```
-  * Initialize as 0
-* ```items```
-  * Initialize as empty array
-* ```previous_transactions```
-  * Initialize as empty array
+register.add_item("eggs", 1.99)
+register.add_item("book", 5.00, 3)   # quantity of 3
+register.total                       # 16.99
+register.items                       # ['eggs', 'book', 'book', 'book']
 
-#### Step 3: Properties
+register.void_last_transaction()     # removes all 3 books
+register.total                       # 1.99
+register.items                       # ['eggs']
 
-* Discount:
-  * Ensure discount is an integer
-  * Ensure that discount is between 0-100 inclusive
-  * If not print “Not valid discount”
+register.apply_discount()
+# After the discount, the total comes to $1.59.
+```
 
-#### Step 4: Methods
+### API
 
-* add_item(item, price, quantity)
-  * Add price to total
-  * Add item to the items array
-  * Add an object to the previous transactions with the item, price and quantity.
-* apply_discount()
-  * Apply discount as percentage off from total
-  * Remove the last item of previous_transaction from array
-    * Ensure price reflects correctly
-    * Ensure items reflects correctly
-  * If no transactions in array print “There is no discount to apply.”
-* void_last_transaction()
-  * Remove the last item of previous_transaction from the array.
-    * Ensure the price reflects correctly.
-    * Ensure items reflect correctly.
-  * If no transactions are in the array, print “There is no transaction to void.”
+| Member | Description |
+| --- | --- |
+| `CashRegister(discount=0)` | Creates a register. `discount` is a percentage from 0–100. |
+| `discount` | Validated property. Invalid values print `Not valid discount` and are ignored. |
+| `total` | Running total, starting at `0`. |
+| `items` | Every unit added, e.g. 3 books add `"book"` three times. |
+| `previous_transactions` | List of `{"item", "price", "quantity"}` dicts, one per `add_item` call. |
+| `add_item(item, price, quantity=1)` | Adds `price * quantity` to the total and records the transaction. |
+| `apply_discount()` | Takes the discount off the total and prints the new total. Prints `There is no discount to apply.` when the discount is 0. |
+| `void_last_transaction()` | Undoes the last `add_item` call. Prints `There is no transaction to void.` when there is nothing to undo. |
 
-#### Step 5: Push feature branch and open a PR on GitHub
+## Running the Tests
 
-* Save, commit, and push your code to GitHub.
-* Open a PR on the main branch of your own repo (be sure not to open a PR on the learn-co-curriculum repo).
+```bash
+pipenv run pytest
+```
 
-#### Step 6: Merge to main
+On Python 3.12+ the pinned pytest 7.1.3 can crash during assertion rewriting;
+run with plain asserts instead:
 
-* Review the PR and merge your finished code into the main branch.
+```bash
+pipenv run pytest --assert=plain
+```
 
-### Task 4: Document and Maintain
+## Screenshot
 
-Best Practice documentation steps:
+All 14 tests passing:
 
-* Add comments to code to explain purpose and logic
-  * Clarify intent / functionality of code to other developers
-  * Add screenshot of completed work included in Markdown in README.
-  * Update README text to reflect the functionality of the application following https://makeareadme.com. 
-* Delete any stale branches on GitHub
-* Remove unnecessary/commented out code
-* If needed, update git ignore to remove sensitive data
+```
+CashRegister in cash_register.py takes one optional argument, a discount, on initialization. .
+CashRegister in cash_register.py sets an instance variable total to zero on initialization. .
+CashRegister in cash_register.py sets an instance variable items to empty list on initialization. .
+CashRegister in cash_register.py accepts a title and a price and increases the total. .
+CashRegister in cash_register.py also accepts an optional quantity. .
+CashRegister in cash_register.py doesn"t forget about the previous total .
+CashRegister in cash_register.py applies the discount to the total price. .
+CashRegister in cash_register.py prints success message with updated total .
+CashRegister in cash_register.py reduces the total .
+CashRegister in cash_register.py prints a string error message that there is no discount to apply .
+CashRegister in cash_register.py returns an array containing all items that have been added .
+CashRegister in cash_register.py returns an array containing all items that have been added, including multiples .
+CashRegister in cash_register.py subtracts the last item from the total .
+CashRegister in cash_register.py returns the total to 0.0 if all items have been removed .
 
-## Save your work and push to GitHub
+============================== 14 passed ==============================
+```
 
-Before you submit your solution, you need to save your progress with git.
-1. Add your changes to the staging area by executing git add .
-2. Create a commit by executing git commit -m "Your commit message"
-3. Push your commits to GitHub by executing git push origin main or git push origin master , depending on the name of your branch (use git branch to check on which branch you are).
+## Project Structure
 
-## Submission and Grading Criteria
+```
+lib/
+├── cash_register.py          # CashRegister class
+└── testing/
+    ├── cash_register_test.py # pytest suite
+    └── conftest.py           # readable test names
+```
 
-1. Use the rubric in Canvas as a guide for how this lab is graded.
-2. Your submission will be automatically scored in CodeGrade, using the most recent commit. Remember to make sure you have pushed your commit to GitHub before submitting your assignment. 
-3. You can review your submission in CodeGrade and see your final score in your Canvas gradebook.
-4. When you are ready to submit, click the ***Load Lab: Object Oriented Programming (OOP)- Part 2- Cash Register*** button in Canvas to launch CodeGrade.
-  * Click on + Create Submission. Connect your repository for this lab.
-  * For additional information on submitting assignments in CodeGrade: [Getting Started in Canvas](https://help.codegrade.com/for-students/getting-started/getting-started-in-canvas).
+## License
+
+See [LICENSE.md](LICENSE.md).
